@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:drawable="clr-namespace:ShapesCanvas"
+             x:Class="ShapesCanvas.MainPage"
+             Title="Shape Playground">
+
+    <ContentPage.Resources>
+        <drawable:ShapeDrawable x:Key="Mycanvas"/>
+
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="65*"/>
+
+            <ColumnDefinition Width="35*"/>
+
+
+        </Grid.ColumnDefinitions>
+        
+        <StackLayout Grid.Column="0"
+                     BackgroundColor="LightBlue">
+            <!-- Play Area -->
+            <GraphicsView x:Name="PlayArea" 
+              Grid.Column="0"
+              Drawable="{StaticResource Mycanvas}"
+              VerticalOptions="FillAndExpand"
+              HorizontalOptions="FillAndExpand">
+                <GraphicsView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="DrawShape" NumberOfTapsRequired="1" Buttons="Primary"/>
+                    <TapGestureRecognizer Tapped="ErazeShape" NumberOfTapsRequired="1" Buttons="Secondary"/>
+
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
+
+        </StackLayout>
+
+        <!-- Control Area -->
+        <StackLayout Grid.Column="1"
+             BackgroundColor="LightGray"
+             VerticalOptions="Fill">
+            <Button Text="Clear" 
+            Clicked="OnClearButtonClicked"
+            HorizontalOptions="Center"
+            VerticalOptions="Start"
+            Margin="10"/>
+        </StackLayout>
+    </Grid>
+
+</ContentPage>
