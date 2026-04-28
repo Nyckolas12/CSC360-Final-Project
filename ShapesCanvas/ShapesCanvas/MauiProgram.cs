@@ -30,101 +30,52 @@ namespace ShapesCanvas
 
     public class ShapeDrawable : IDrawable
     {
-        private  List<IShape> _shapes;
-        private readonly Random _random = new();
-        private GraphicsView _graphicsView = new GraphicsView();
-        List<Shape> ShapeCollection = new List<Shape>(); 
-        List<Color> ColorCollection = new List<Color>();
-        
-
-        public ShapeDrawable() {
-            _shapes = new List<IShape>();
-            _shapes.Add(new Rectangle());
-            _shapes.Add(new Ellipse());
-            _graphicsView.Drawable = this;
-        }
-        public ShapeDrawable(List<IShape> shapes)
-        {
-            _shapes = new List<IShape>();
-            
-
-        }
+        // Single list of (Shape, Color) pairs — no more parallel lists.
+        private readonly List<ShapeRecord> _shapes = new();
 
         public void CreateShape(float x, float y)
         {
-            float rand = _random.NextSingle();
-            Rectangle rect = new Rectangle();
-            rect.HeightRequest = _random.Next(100);
-            rect.WidthRequest = _random.Next(100);
-            rect.AnchorX = x - rect.WidthRequest / 2;
-            rect.AnchorY = y - rect.HeightRequest / 2;
-            
-           
-
-            Ellipse ellipse = new Ellipse();
-            ellipse.HeightRequest = _random.Next(100);
-            ellipse.WidthRequest = _random.Next(100);
-            ellipse.AnchorX = x - ellipse.WidthRequest / 2;
-            ellipse.AnchorY = y - ellipse.HeightRequest / 2;
-
-            if (rand <= 0.5)
-            {
-                ShapeCollection.Add(rect);
-            }
-            else
-            {
-                ShapeCollection.Add(ellipse);
-            }
-
-            Color color = new Color(_random.Next(255), _random.Next(255), _random.Next(255));
-            ColorCollection.Add(color);
-            
+            // Delegate all construction logic to the factory.
+            ShapeRecord record = ShapeFactory.CreateRandom(x, y);
+            _shapes.Add(record);
         }
 
-        public void RemoveShape(float x , float y)
+        public void RemoveShape(float x, float y)
         {
-            Shape ShapeRemove = null;
-            foreach (Shape shape in ShapeCollection)
+            ShapeRecord? target = null;
+
+            foreach (ShapeRecord record in _shapes)
             {
-                if(shape.AnchorX <= x && shape.AnchorX + shape.WidthRequest >= x)
+                Shape s = record.Shape;
+                if (s.AnchorX <= x && s.AnchorX + s.WidthRequest >= x &&
+                    s.AnchorY <= y && s.AnchorY + s.HeightRequest >= y)
                 {
-                    if (shape.AnchorY <= y && shape.AnchorY + shape.HeightRequest >= y)
-                    {
-                        ShapeRemove = shape;
-                    }
+                    target = record;   
                 }
-
-               
             }
 
-            if( ShapeRemove != null ) ColorCollection.RemoveAt(ShapeCollection.IndexOf(ShapeRemove));
-            if (ShapeRemove != null ) ShapeCollection.Remove(ShapeRemove);
+            if (target is not null)
+                _shapes.Remove(target);
         }
 
-        public void ClearShapes()
-        {
-            ColorCollection.Clear();
-            ShapeCollection.Clear();
-        }
-
-
+        public void ClearShapes() => _shapes.Clear();
 
         public void Draw(ICanvas canvas, RectF dirtyRect)
         {
-            for (int i = 0; i < ShapeCollection.Count; i++)
+            foreach (ShapeRecord record in _shapes)
             {
-                Shape shape = ShapeCollection.ElementAt(i);
-                canvas.FillColor = ColorCollection.ElementAt(i);
-                if (shape.GetType() == typeof(Rectangle))
-                {
-                    canvas.FillRectangle((float)shape.AnchorX, (float)shape.AnchorY, (float)shape.WidthRequest, (float)shape.HeightRequest);
-                }
-                else
-                {
-                    canvas.FillEllipse((float)shape.AnchorX, (float)shape.AnchorY, (float)shape.WidthRequest, (float)shape.HeightRequest);
-                }
-            }
+                canvas.FillColor = record.Color;
+                Shape s = record.Shape;
 
+                if (s is Rectangle)
+                    canvas.FillRectangle((float)s.AnchorX, (float)s.AnchorY,
+                                         (float)s.WidthRequest, (float)s.HeightRequest);
+                else
+                    canvas.FillEllipse((float)s.AnchorX, (float)s.AnchorY,
+                                       (float)s.WidthRequest, (float)s.HeightRequest);
+            }
         }
     }
+
+  
 }
