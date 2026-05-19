@@ -40,8 +40,13 @@
         <StackLayout Grid.Column="1"
              BackgroundColor="LightGray"
              VerticalOptions="Fill">
-            <Button Text="Clear" 
+            <Button Text="Clear"
             Clicked="OnClearButtonClicked"
+            HorizontalOptions="Center"
+            VerticalOptions="Start"
+            Margin="10"/>
+            <Button Text="Undo"
+            Clicked="OnUndoButtonClicked"
             HorizontalOptions="Center"
             VerticalOptions="Start"
             Margin="10"/>
