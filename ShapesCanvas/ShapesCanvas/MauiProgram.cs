@@ -2,6 +2,7 @@
 using Microsoft.Maui.Layouts;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Controls.Shapes;
+using ShapesCanvas.Rendering;
 
 
 
@@ -67,15 +68,12 @@ namespace ShapesCanvas
         {
             foreach (ShapeRecord record in _shapes)
             {
-                canvas.FillColor = record.Color;
-                Shape s = record.Shape;
-
-                if (s is Rectangle)
-                    canvas.FillRectangle((float)s.AnchorX, (float)s.AnchorY,
-                                         (float)s.WidthRequest, (float)s.HeightRequest);
-                else
-                    canvas.FillEllipse((float)s.AnchorX, (float)s.AnchorY,
-                                       (float)s.WidthRequest, (float)s.HeightRequest);
+                // Decorator pattern: start with the base fill renderer, then wrap it
+                // in a BorderDecorator that layers an outline on top. Render() is the
+                // same call whether or not the shape is decorated.
+                IShapeRenderer renderer = new ShapeRenderer(record);
+                renderer = new BorderDecorator(renderer, record, Colors.Black, 2f);
+                renderer.Render(canvas);
             }
         }
     }

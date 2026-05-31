@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
+		<!-- Windows-only build: this project is developed and run on Windows, so the
+		     Android/iOS/MacCatalyst targets are intentionally omitted. Re-add them here
+		     if you install their MAUI workloads and want to target those platforms. -->
+		<TargetFrameworks>net8.0-windows10.0.19041.0</TargetFrameworks>
 		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
 		<!-- <TargetFrameworks>$(TargetFrameworks);net8.0-tizen</TargetFrameworks> -->
 
@@ -16,6 +18,10 @@
 		<OutputType>Exe</OutputType>
 		<RootNamespace>ShapesCanvas</RootNamespace>
 		<UseMaui>true</UseMaui>
+
+		<!-- Run the Windows app unpackaged (plain .exe) instead of as an MSIX package.
+		     Avoids the MSIX packaging tooling, which isn't available in this setup. -->
+		<WindowsPackageType>None</WindowsPackageType>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
